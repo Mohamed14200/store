@@ -5,194 +5,114 @@
   <title>متجري الجزائري</title>
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
-      margin: 0;
-      background: #f0f2f5;
+      font-family: 'Arial';
+      background: #f4f4f4;
+      padding: 30px;
       color: #333;
     }
-
-    header {
-      background-color: #007BFF;
-      color: white;
-      padding: 20px 30px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    main {
-      padding: 30px;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    h2 {
-      border-bottom: 2px solid #007BFF;
-      padding-bottom: 5px;
-      margin-top: 40px;
-      font-size: 24px;
+    h1, h2 {
       color: #007BFF;
     }
-
     .product {
       background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
       display: flex;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-
-    .product:hover {
-      transform: scale(1.01);
-    }
-
-    .product img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-left: 1px solid #eee;
-    }
-
-    .product-content {
+      gap: 20px;
       padding: 15px;
-      flex-grow: 1;
+      align-items: center;
     }
-
-    .product-content h3 {
-      margin: 0 0 10px;
-      color: #333;
-    }
-
-    .product-content p {
-      margin: 5px 0;
-      line-height: 1.5;
-    }
-
-    .product-content strong {
-      display: block;
-      color: #28a745;
-      margin: 10px 0;
-    }
-
-    .product-content button {
-      padding: 8px 16px;
-      border: none;
-      background: #007BFF;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .product-content button:hover {
-      background: #0056b3;
-    }
-
-    #cart {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-top: 10px;
-    }
-
-    #orderForm {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button[type="submit"] {
-      margin-top: 20px;
-      padding: 12px 24px;
-      background: #28a745;
-      color: white;
-      border: none;
+    .product img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
       border-radius: 8px;
-      font-size: 18px;
+    }
+    .product h3 {
+      margin: 5px 0;
+    }
+    .product p {
+      margin: 5px 0;
+    }
+    .product button {
+      padding: 5px 10px;
+      background: #28a745;
+      border: none;
+      color: white;
       cursor: pointer;
+      border-radius: 5px;
     }
-
-    button[type="submit"]:hover {
-      background: #218838;
-    }
-
     .cart-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
       margin-bottom: 10px;
-      border-bottom: 1px dashed #ccc;
-      padding-bottom: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .cart-item input {
+      width: 50px;
+    }
+    .cart-item button {
+      margin-left: 5px;
+      padding: 3px 8px;
     }
   </style>
 </head>
 <body>
 
-<header>🛍️ متجري الجزائري</header>
+<h1>🛍️ المنتجات</h1>
+<div id="products"></div>
 
-<main>
-  <h2>📦 المنتجات</h2>
-  <div id="products"></div>
+<h2>🛒 السلة</h2>
+<div id="cart">السلة فارغة</div>
 
-  <h2>🛒 السلة</h2>
-  <div id="cart">السلة فارغة</div>
+<h2>📦 تنفيذ الطلب</h2>
+<form id="orderForm" action="https://formsubmit.co/cherif14200@gmail.com" method="POST">
+  <input type="hidden" name="_subject" value="طلب جديد من المتجر ">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="cart" id="cartData">
+  <input type="hidden" name="total" id="cartTotal">
 
-  <h2>📤 تنفيذ الطلب</h2>
-  <form id="orderForm" action="https://formsubmit.co/cherif14200@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="طلب جديد من المتجر">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="cart" id="cartData">
-    <input type="hidden" name="total" id="cartTotal">
+  <label>الاسم الكامل: <input type="text" name="name" required></label><br><br>
+  <label>رقم الهاتف: <input type="tel" name="phone" required></label><br><br>
+  <label>الولاية:
+    <select id="wilaya" name="wilaya" required>
+      <option value="">اختر الولاية</option>
+    </select>
+  </label><br><br>
+  <label>البلدية:
+    <select id="commune" name="commune" required>
+      <option value="">اختر البلدية</option>
+    </select>
+  </label><br><br>
+  <label>العنوان الكامل: <input type="text" name="address" required></label><br><br>
 
-    <label>الاسم الكامل:
-      <input type="text" name="name" required>
-    </label>
+  <p id="shippingCostText">سعر التوصيل: 0 دج</p>
+  <p id="finalTotalText">المبلغ النهائي: 0 دج</p>
 
-    <label>رقم الهاتف:
-      <input type="tel" name="phone" required>
-    </label>
-
-    <label>الولاية:
-      <select id="wilaya" name="wilaya" required>
-        <option value="">اختر الولاية</option>
-      </select>
-    </label>
-
-    <label>البلدية:
-      <select id="commune" name="commune" required>
-        <option value="">اختر البلدية</option>
-      </select>
-    </label>
-
-    <label>العنوان الكامل:
-      <input type="text" name="address" required>
-    </label>
-
-    <button type="submit">✅ إرسال الطلب</button>
-  </form>
-</main>
+  <button type="submit">✅ تأكيد الطلب</button>
+</form>
 
 <script>
 const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
 let cart = [];
 
+const shippingCosts = {"تيارت": 600, "الجزائر": 400, "وهران": 500};
+
+function updateFinalTotal() {
+  const wilaya = document.getElementById('wilaya').value;
+  const shipping = shippingCosts[wilaya] || 0;
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const total = subtotal + shipping;
+
+  document.getElementById('shippingCostText').innerText = `سعر التوصيل: ${shipping} دج`;
+  document.getElementById('finalTotalText').innerText = `المبلغ النهائي: ${total} دج`;
+
+  document.getElementById('cartTotal').value = total;
+}
+
+// تحميل المنتجات
 fetch(PRODUCTS_URL)
   .then(res => res.json())
   .then(products => {
@@ -203,19 +123,26 @@ fetch(PRODUCTS_URL)
         div.className = 'product';
         div.innerHTML = `
           <img src="${p.image}" alt="${p.name}" />
-          <div class="product-content">
+          <div>
             <h3>${p.name}</h3>
             <p>${p.description}</p>
-            <strong>${p.price} دج</strong>
-            <button onclick='addToCart(${JSON.stringify(p)})'>🛒 أضف إلى السلة</button>
+            <p><strong>${p.price} دج</strong></p>
+            <label>الكمية: <input type="number" min="1" value="1" id="qty-${p.name}" /></label>
+            <button onclick='addToCart(${JSON.stringify(p)}, "${p.name}")'>أضف إلى السلة</button>
           </div>`;
         container.appendChild(div);
       }
     });
   });
 
-function addToCart(product) {
-  cart.push(product);
+function addToCart(product, name) {
+  const qty = parseInt(document.getElementById(`qty-${name}`).value) || 1;
+  const existing = cart.find(p => p.name === product.name);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({ ...product, qty });
+  }
   showCart();
 }
 
@@ -225,8 +152,29 @@ function showCart() {
     cartBox.innerHTML = "السلة فارغة";
     return;
   }
-  cartBox.innerHTML = cart.map(p => `<div class="cart-item">${p.name} - ${p.price} دج</div>`).join('') +
-    `<p><strong>💰 المجموع: ${cart.reduce((s, p) => s + parseFloat(p.price), 0)} دج</strong></p>`;
+
+  cartBox.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <p><strong>${item.name}</strong> - ${item.price} دج × ${item.qty} = ${item.price * item.qty} دج</p>
+      <button onclick="removeItem(${index})">🗑️ حذف</button>
+      <button onclick="editItem(${index})">✏️ تعديل</button>
+    </div>
+  `).join("");
+
+  updateFinalTotal();
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  showCart();
+}
+
+function editItem(index) {
+  const newQty = prompt("أدخل الكمية الجديدة:", cart[index].qty);
+  if (newQty && !isNaN(newQty) && newQty > 0) {
+    cart[index].qty = parseInt(newQty);
+    showCart();
+  }
 }
 
 // ولايات وبلديات
@@ -255,8 +203,10 @@ wilayaSelect.addEventListener('change', () => {
     opt.textContent = commune;
     communeSelect.appendChild(opt);
   });
+  updateFinalTotal();
 });
 
+// تجهيز السلة قبل الإرسال
 document.getElementById('orderForm').addEventListener('submit', function(e) {
   if (cart.length === 0) {
     e.preventDefault();
@@ -264,10 +214,11 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
     return;
   }
 
-  document.getElementById('cartData').value = cart.map(p => `${p.name} (${p.price} دج)`).join(" - ");
-  document.getElementById('cartTotal').value = cart.reduce((s, p) => s + parseFloat(p.price), 0);
+  document.getElementById('cartData').value =
+    cart.map(p => `${p.name} (${p.price} دج × ${p.qty}) = ${p.price * p.qty} دج`).join(" - ");
 });
 </script>
 
 </body>
-</html>
+  </html>
+
