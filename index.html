@@ -19,7 +19,12 @@
 <div id="cart">السلة فارغة</div>
 
 <h2>📦 تنفيذ الطلب</h2>
-<form id="orderForm">
+<form id="orderForm" action="https://formsubmit.co/cherif14200@gmail.com" method="POST">
+  <input type="hidden" name="_subject" value="طلب جديد من المتجر">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="cart" id="cartData">
+  <input type="hidden" name="total" id="cartTotal">
+
   <label>الاسم الكامل: <input type="text" name="name" required></label><br><br>
   <label>رقم الهاتف: <input type="tel" name="phone" required></label><br><br>
   <label>الولاية:
@@ -33,16 +38,15 @@
     </select>
   </label><br><br>
   <label>العنوان الكامل: <input type="text" name="address" required></label><br><br>
+
   <button type="submit">إرسال الطلب</button>
 </form>
 
 <script>
 const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
-const ORDER_URL = "https://script.google.com/macros/s/AKfycbyAQc09c0iyulqwRrEq-lLLi73SuqdttoZOAVuOmCu6lm7YSsAheyXd3vz0FvL0jqic/exec";
-
 let cart = [];
 
-// 1. تحميل المنتجات
+// تحميل المنتجات
 fetch(PRODUCTS_URL)
   .then(res => res.json())
   .then(products => {
@@ -79,7 +83,7 @@ function showCart() {
     `<p><strong>المجموع: ${cart.reduce((s, p) => s + parseFloat(p.price), 0)} دج</strong></p>`;
 }
 
-// 3. ولايات وبلديات
+// ولايات وبلديات
 const dzData = {
   "تيارت": ["فرندة", "مهدية", "قصر الشلالة", "مدروسة"],
   "الجزائر": ["باب الزوار", "حيدرة", "بئر مراد رايس", "بلوزداد"],
@@ -107,43 +111,17 @@ wilayaSelect.addEventListener('change', () => {
   });
 });
 
-// 4. إرسال الطلب
+// تجهيز السلة قبل الإرسال
 document.getElementById('orderForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-
   if (cart.length === 0) {
+    e.preventDefault();
     alert("❌ السلة فارغة!");
     return;
   }
 
-  const formData = new FormData(this);
-  const order = {
-    name: formData.get('name'),
-    phone: formData.get('phone'),
-    wilaya: formData.get('wilaya'),
-    commune: formData.get('commune'),
-    address: formData.get('address'),
-    cart: cart.map(p => `${p.name} (${p.price} دج)` ).join(" - "),
-    total: cart.reduce((s, p) => s + parseFloat(p.price), 0)
-  };
-
-  fetch(ORDER_URL, {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(order)
-  })
-  .then(res => res.text())
-  .then(res => {
-    alert("✅ تم إرسال الطلب بنجاح!");
-    cart = [];
-    showCart();
-    document.getElementById('orderForm').reset();
-    communeSelect.innerHTML = '<option value="">اختر البلدية</option>';
-  })
-  .catch(err => {
-    console.error(err);
-    alert("⚠️ حدث خطأ أثناء إرسال الطلب!");
-  });
+  // تعبئة الحقول المخفية
+  document.getElementById('cartData').value = cart.map(p => `${p.name} (${p.price} دج)`).join(" - ");
+  document.getElementById('cartTotal').value = cart.reduce((s, p) => s + parseFloat(p.price), 0);
 });
 </script>
 
