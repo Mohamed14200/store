@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>متجري الجزائري</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f9f9f9; }
+    .product { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: white; display: flex; gap: 15px; }
+    .product img { width: 100px; height: 100px; object-fit: cover; }
+    #cart, #orderForm { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+<h1>المنتجات</h1>
+<div id="products"></div>
+
+<h2>🛒 السلة</h2>
+<div id="cart">السلة فارغة</div>
+
+<h2>📦 تنفيذ الطلب</h2>
+<form id="orderForm">
+  <label>الاسم الكامل: <input type="text" name="name" required></label><br><br>
+  <label>رقم الهاتف: <input type="tel" name="phone" required></label><br><br>
+  <label>الولاية:
+    <select id="wilaya" name="wilaya" required>
+      <option value="">اختر الولاية</option>
+    </select>
+  </label><br><br>
+  <label>البلدية:
+    <select id="commune" name="commune" required>
+      <option value="">اختر البلدية</option>
+    </select>
+  </label><br><br>
+  <label>العنوان الكامل: <input type="text" name="address" required></label><br><br>
+  <button type="submit">إرسال الطلب</button>
+</form>
+
+<script>
+const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
+const ORDER_URL = "https://script.google.com/macros/s/AKfycbyAQc09c0iyulqwRrEq-lLLi73SuqdttoZOAVuOmCu6lm7YSsAheyXd3vz0FvL0jqic/exec";
+
+let cart = [];
+
+// 1. تحميل المنتجات
+fetch(PRODUCTS_URL)
+  .then(res => res.json())
+  .then(products => {
+    const container = document.getElementById('products');
+    products.forEach(p => {
+      if (parseInt(p.quantity) > 0) {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" />
+          <div>
+            <h3>${p.name}</h3>
+            <p>${p.description}</p>
+            <p><strong>${p.price} دج</strong></p>
+            <button onclick='addToCart(${JSON.stringify(p)})'>أضف إلى السلة</button>
+          </div>`;
+        container.appendChild(div);
+      }
+    });
+  });
+
+// 2. إضافة إلى السلة
+function addToCart(product) {
+  cart.push(product);
+  showCart();
+}
+
+function showCart() {
+  const cartBox = document.getElementById('cart');
+  if (cart.length === 0) {
+    cartBox.innerHTML = "السلة فارغة";
+    return;
+  }
+  cartBox.innerHTML = cart.map(p => `<p>${p.name} - ${p.price} دج</p>`).join('') +
+    `<p><strong>المجموع: ${cart.reduce((s, p) => s + parseFloat(p.price), 0)} دج</strong></p>`;
+}
+
+// 3. ولايات وبلديات
+const dzData = {
+  "تيارت": ["فرندة", "مهدية", "قصر الشلالة", "مدروسة"],
+  "الجزائر": ["باب الزوار", "حيدرة", "بئر مراد رايس", "بلوزداد"],
+  "وهران": ["السانية", "بئر الجير", "بطيوة", "الكرمة"]
+};
+
+const wilayaSelect = document.getElementById('wilaya');
+const communeSelect = document.getElementById('commune');
+
+for (let wilaya in dzData) {
+  let option = document.createElement('option');
+  option.value = wilaya;
+  option.textContent = wilaya;
+  wilayaSelect.appendChild(option);
+}
+
+wilayaSelect.addEventListener('change', () => {
+  communeSelect.innerHTML = '<option value="">اختر البلدية</option>';
+  const selected = dzData[wilayaSelect.value] || [];
+  selected.forEach(commune => {
+    let opt = document.createElement('option');
+    opt.value = commune;
+    opt.textContent = commune;
+    communeSelect.appendChild(opt);
+  });
+});
+
+// 4. إرسال الطلب
+document.getElementById('orderForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  if (cart.length === 0) {
+    alert("❌ السلة فارغة!");
+    return;
+  }
+
+  const formData = new FormData(this);
+  const order = {
+    name: formData.get('name'),
+    phone: formData.get('phone'),
+    wilaya: formData.get('wilaya'),
+    commune: formData.get('commune'),
+    address: formData.get('address'),
+    cart: cart.map(p => `${p.name} (${p.price} دج)` ).join(" - "),
+    total: cart.reduce((s, p) => s + parseFloat(p.price), 0)
+  };
+
+  fetch(ORDER_URL, {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  })
+  .then(res => res.text())
+  .then(res => {
+    alert("✅ تم إرسال الطلب بنجاح!");
+    cart = [];
+    showCart();
+    document.getElementById('orderForm').reset();
+    communeSelect.innerHTML = '<option value="">اختر البلدية</option>';
+  })
+  .catch(err => {
+    console.error(err);
+    alert("⚠️ حدث خطأ أثناء إرسال الطلب!");
+  });
+});
+</script>
+</body>
+</html>
