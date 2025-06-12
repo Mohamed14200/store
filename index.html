@@ -38,7 +38,7 @@
 
 <script>
 const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
-const ORDER_URL = "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbyAQc09c0iyulqwRrEq-lLLi73SuqdttoZOAVuOmCu6lm7YSsAheyXd3vz0FvL0jqic/exec";
+const ORDER_URL = "https://script.google.com/macros/s/AKfycbyAQc09c0iyulqwRrEq-lLLi73SuqdttoZOAVuOmCu6lm7YSsAheyXd3vz0FvL0jqic/exec";
 
 let cart = [];
 
@@ -64,7 +64,6 @@ fetch(PRODUCTS_URL)
     });
   });
 
-// 2. إضافة إلى السلة
 function addToCart(product) {
   cart.push(product);
   showCart();
@@ -147,5 +146,9 @@ document.getElementById('orderForm').addEventListener('submit', function(e) {
   });
 });
 </script>
+
+</body>
+</html>
+
 </body>
 </html>
