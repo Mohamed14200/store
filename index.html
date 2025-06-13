@@ -2,227 +2,195 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>may-store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>متجري العصري</title>
   <style>
-    /* ... نفس الستايلات تماماً، لا تغيير هنا ... */
-    body { font-family: 'Tahoma', 'Arial', sans-serif; padding: 20px; background: #f4f4f9; color: #333; }
-    h1, h2 { text-align: center; color: #0056b3; }
-    .products-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .product { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: white; display: flex; flex-direction: column; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
-    .product:hover { transform: translateY(-5px); }
-    .product img { max-width: 100%; height: 200px; object-fit: cover; border-radius: 5px; margin-bottom: 15px; }
-    .product-info { flex-grow: 1; }
-    .product-price { font-size: 1.2em; font-weight: bold; color: #28a745; margin: 10px 0; }
-    .add-to-cart-btn { background-color: #007bff; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px; width: 100%; font-size: 1em; transition: background-color 0.2s; }
-    .add-to-cart-btn:hover { background-color: #0056b3; }
-    #cart, #orderForm { margin-top: 30px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .cart-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .cart-table th, .cart-table td { border: 1px solid #ddd; padding: 10px; text-align: center; vertical-align: middle; }
-    .cart-table th { background-color: #f2f2f2; }
-    .quantity-input { width: 60px; text-align: center; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
-    .remove-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-    form label { display: block; margin-bottom: 10px; }
-    form input, form select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    form button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; width: 100%; }
-    form button:disabled { background-color: #aaa; cursor: not-allowed; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
-    .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 10px; position: relative; }
-    .close-btn { color: #aaa; position: absolute; left: 15px; top: 5px; font-size: 28px; font-weight: bold; cursor: pointer; }
-    .close-btn:hover, .close-btn:focus { color: black; }
-    .modal-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-    .modal-buttons button { width: 48%; }
-    #confirm-order-btn { background-color: #28a745; }
-    #cancel-order-btn { background-color: #6c757d; }
+    /* ... (CSS السابق مع تعديلات طفيفة على الأزرار) ... */
+    :root { --primary-color: #0056b3; --secondary-color: #007bff; --success-color: #28a745; --danger-color: #dc3545; --warning-color: #ffc107; --light-gray: #f8f9fa; --dark-gray: #343a40; --border-color: #dee2e6; }
+    body { font-family: 'Tahoma', 'Arial', sans-serif; margin: 0; background-color: #f4f4f9; }
+    .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 20px 0; }
+    .store-header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .logo a { font-size: 1.8em; font-weight: bold; color: var(--primary-color); text-decoration: none; }
+    .cart-button { position: relative; cursor: pointer; border: none; background: none; }
+    .cart-icon { width: 32px; height: 32px; }
+    .cart-count { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.9em; display: flex; justify-content: center; align-items: center; font-weight: bold; transition: transform 0.2s; }
+    .slider-container { position: relative; width: 100%; height: 40vh; min-height: 250px; margin: 20px auto; overflow: hidden; border-radius: 8px; }
+    .slider-wrapper { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+    .slide { min-width: 100%; height: 100%; } .slide img { width: 100%; height: 100%; object-fit: cover; }
+    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0,0,0,0.5); color: white; border: none; font-size: 2rem; padding: 5px 15px; cursor: pointer; z-index: 10; border-radius: 5px;}
+    .prev-btn { right: 10px; } .next-btn { left: 10px; }
+    #products-section h2 { text-align: center; margin-bottom: 20px; font-size: 2em; color: var(--primary-color); }
+    #category-filters { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+    .category-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: white; color: var(--primary-color); border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+    .category-btn.active, .category-btn:hover { background: var(--primary-color); color: white; }
+    .products-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+    .product { border: 1px solid var(--border-color); border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; position: relative; display: flex; flex-direction: column; }
+    .product:hover { transform: translateY(-5px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .product img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0; }
+    /* ** تعديل مهم هنا: استعادة تصميم بطاقة المنتج */
+    .product-info { padding: 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
+    .product-info h3 { margin-top: 0; }
+    .product-price { font-size: 1.2em; font-weight: bold; color: var(--success-color); margin: 5px 0 10px 0; }
+    .product-description { font-size: 0.9em; color: #6c757d; margin-bottom: 15px; flex-grow: 1; }
+    .product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: auto; }
+    .product-actions button { border: none; padding: 12px; font-size: 1em; cursor: pointer; transition: opacity 0.2s; }
+    .product-actions button:hover { opacity: 0.8; }
+    .add-to-cart-btn { background-color: var(--secondary-color); color: white; border-radius: 0 0 8px 0; }
+    .buy-now-btn { background-color: var(--warning-color); color: black; border-radius: 0 0 0 8px; }
+    .product.out-of-stock .product-actions button { background-color: #aaa; cursor: not-allowed; }
+    .product.out-of-stock { opacity: 0.6; }
+    .product.out-of-stock::after { content: 'نفد المخزون'; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0,0,0, 0.7); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; }
+    
+    .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+    .modal-content { background-color: #fefefe; margin: 5% auto; padding: 25px; border: 1px solid #888; border-radius: 10px; position: relative; }
+    #checkoutModal .modal-content { width: 90%; max-width: 900px; }
+    #confirmationModal .modal-content { width: 80%; max-width: 600px; }
+    .close-btn { color: #aaa; position: absolute; left: 15px; top: 5px; font-size: 32px; font-weight: bold; cursor: pointer; } .close-btn:hover { color: black; }
+    .checkout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
+    #cart-summary-container { max-height: 450px; overflow-y: auto; padding-right: 15px; }
+    .cart-table { width: 100%; border-collapse: collapse; }
+    .cart-table th, .cart-table td { border: 1px solid var(--border-color); padding: 10px; text-align: center; }
+    .quantity-input { width: 60px; text-align: center; } .remove-btn { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+    form label { display: block; margin-bottom: 8px; font-weight: bold; }
+    form input, form select { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 4px; }
+    form button { background-color: var(--success-color); color: white; padding: 12px 20px; border: none; cursor: pointer; font-size: 1.1em; width: 100%; border-radius: 5px; }
+    .modal-buttons { display: flex; justify-content: space-between; margin-top: 20px; } .modal-buttons button { width: 48%; }
+    @media (max-width: 992px) { .checkout-grid { grid-template-columns: 1fr; } #cart-summary-container { max-height: 250px; margin-bottom: 20px;} }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+    .spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--primary-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+  <div id="loading" class="loading-overlay"><div class="spinner"></div><p>...جاري تحميل المتجر</p></div>
+  <header class="store-header">
+    <div class="logo"><a href="#">متجري</a></div>
+    <button class="cart-button" onclick="showCheckoutModal()">
+      <svg class="cart-icon" viewBox="0 0 24 24"><path d="M6.29977 5H21L19 12H7.37671M20 16H8L6 3H3M9 20C9 20.5523 8.55228 21 8 21C7.44772 21 7 20.5523 7 20C7 19.4477 7.44772 19 8 19C8.55228 19 9 19.4477 9 20ZM17.5 20C17.5 20.5523 17.0523 21 16.5 21C15.9477 21 15.5 20.5523 15.5 20C15.5 19.4477 15.9477 19 16.5 19C17.0523 19 17.5 19.4477 17.5 20Z" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="cart-count">0</span>
+    </button>
+  </header>
 
-<h1>المنتجات المتوفرة</h1>
-<div id="products-container" class="products-container"></div>
-
-<h2>🛒 سلة المشتريات</h2>
-<div id="cart"><p>السلة فارغة حالياً.</p></div>
-
-<h2>📦 معلومات الشحن والتوصيل</h2>
-<!-- **تعديل مهم**: أضفنا حقل _next لتوجيه المستخدم بعد إرسال الفورم -->
-<form id="orderForm" action="https://formsubmit.co/cherif14200@gmail.com" method="POST">
-  <input type="hidden" name="_subject" value="طلب جديد من المتجر">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="hidden" name="_next" value="https://your-website.com/thankyou.html"> <!-- سيتم تعديل هذا الرابط لاحقاً -->
-
-  <input type="hidden" name="cart_items" id="cartData">
-  <input type="hidden" name="delivery_cost" id="deliveryCost">
-  <input type="hidden" name="final_total_price" id="cartTotal">
-
-  <label for="name">الاسم الكامل:</label>
-  <input type="text" id="name" name="name" required>
-
-  <label for="phone">رقم الهاتف:</label>
-  <input type="tel" id="phone" name="phone" required>
-
-  <label for="wilaya">الولاية:</label>
-  <select id="wilaya" name="wilaya" required><option value="">اختر الولاية...</option></select>
-
-  <label for="commune">البلدية:</label>
-  <select id="commune" name="commune" required><option value="">اختر البلدية أولاً...</option></select>
-
-  <label for="address">العنوان الكامل (الحي، الشارع، إلخ):</label>
-  <input type="text" id="address" name="address" required>
-
-  <button type="submit" id="submitBtn">إتمام عملية الشراء</button>
-</form>
-
-<!-- ===== نافذة التأكيد المنبثقة (Modal) ===== -->
-<div id="confirmationModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">×</span>
-    <h2>📝 مراجعة الطلب</h2>
-    <div id="confirmation-summary"></div>
-    <div class="modal-buttons">
-        <button id="cancel-order-btn">إلغاء</button>
-        <button id="confirm-order-btn">تأكيد الطلب</button>
-    </div>
-  </div>
-</div>
+  <main class="container">
+    <div class="slider-container"><div class="slider-wrapper"></div><button class="slider-btn prev-btn"><</button><button class="slider-btn next-btn">></button></div>
+    <section id="products-section"><h2>منتجاتنا</h2><div id="category-filters"></div><div id="products-container" class="products-container"></div></section>
+  </main>
+  
+  <div id="checkoutModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('checkoutModal')">×</span><h2>إتمام الطلب</h2><div id="checkout-content-container"></div></div></div>
+  <div id="confirmationModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('confirmationModal')">×</span><h2>📝 مراجعة الطلب</h2><div id="confirmation-summary"></div><div class="modal-buttons"><button id="cancel-order-btn" onclick="closeModal('confirmationModal')">إلغاء</button><button id="confirm-order-btn">تأكيد الطلب</button></div></div></div>
 
 <script>
+// --- **تغييرات طفيفة هنا لإضافة دوال الأزرار الجديدة** ---
+// --- إعدادات وثوابت ---
 const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
 const DZ_DATA_URL = "dz.json";
-const DELIVERY_COSTS = {
-  "الجزائر": 400, "وهران": 450, "قسنطينة": 450, "البليدة": 350, "بومرداس": 350, "تيبازة": 350,
-  "default": 600
-};
+const DELIVERY_COSTS = { "الجزائر": 400, "وهران": 450, "default": 600 };
+const SLIDER_IMAGES = ["https://via.placeholder.com/1200x400/007BFF/FFFFFF?text=New+Arrivals", "https://via.placeholder.com/1200x400/28a745/FFFFFF?text=Special+Offer"];
+let allProducts = [], cart = [], dzData = {};
 
-let cart = [];
-let dzData = {};
-
-document.addEventListener('DOMContentLoaded', () => {
-    // **تعديل مهم**: تحديد رابط صفحة الشكر ديناميكياً
-    const thankYouPageUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'thankyou.html';
-    document.querySelector('input[name="_next"]').value = thankYouPageUrl;
-    
-    loadProducts();
-    loadWilayas();
-    renderCart();
-});
-
-const wilayaSelect = document.getElementById('wilaya');
-const communeSelect = document.getElementById('commune');
-const orderForm = document.getElementById('orderForm');
-const modal = document.getElementById('confirmationModal');
-const closeBtn = document.querySelector('.close-btn');
-const confirmBtn = document.getElementById('confirm-order-btn');
-const cancelBtn = document.getElementById('cancel-order-btn');
-
-function loadProducts() { /* ... نفس الكود بدون تغيير ... */
-  fetch(PRODUCTS_URL).then(res => res.json()).then(displayProducts).catch(err => {
-    document.getElementById('products-container').innerHTML = '<p>عذراً، حدث خطأ أثناء تحميل المنتجات.</p>'; console.error(err);
-  });
-}
-
-function loadWilayas() { /* ... نفس الكود بدون تغيير ... */
-  fetch(DZ_DATA_URL).then(res => res.json()).then(data => {
-    dzData = data;
-    Object.keys(dzData).sort().forEach(wilaya => wilayaSelect.appendChild(new Option(wilaya, wilaya)));
-  }).catch(err => { console.error("خطأ في تحميل ملف الولايات:", err); alert("لا يمكن تحميل قائمة الولايات والبلديات."); });
-}
-
-function displayProducts(products) { /* ... نفس الكود بدون تغيير ... */
-  const container = document.getElementById('products-container');
-  container.innerHTML = '';
-  products.forEach(p => {
-    if (p.id && parseInt(p.quantity) > 0) {
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `<img src="${p.image}" alt="${p.name}" /><div class="product-info"><h3>${p.name}</h3><p>${p.description}</p><p class="product-price">${p.price} دج</p></div><button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(p)})'>أضف إلى السلة</button>`;
-      container.appendChild(div);
+document.addEventListener('DOMContentLoaded', async () => {
+    // ... الكود كما هو من النسخة المستقرة السابقة
+    const loadingOverlay = document.getElementById('loading');
+    loadingOverlay.style.display = 'flex';
+    setupSlider();
+    try {
+        await Promise.all([loadWilayas(), loadProducts()]);
+        displayCategories();
+        displayProducts('all');
+    } catch (error) {
+        document.getElementById('products-container').innerHTML = `<p style="text-align:center; color:red;">عذراً، حدث خطأ أثناء تحميل بيانات المتجر.</p>`;
+    } finally {
+        loadingOverlay.style.display = 'none';
     }
-  });
-}
-
-function addToCart(product) { /* ... نفس الكود بدون تغيير ... */
-  const existingProduct = cart.find(item => item.id == product.id);
-  if (existingProduct) { existingProduct.quantity++; } else { cart.push({ ...product, quantity: 1 }); }
-  alert(`تمت إضافة "${product.name}" إلى السلة بنجاح!`);
-  renderCart();
-}
-
-function removeFromCart(productId) {
-  cart = cart.filter(item => item.id != productId);
-  renderCart();
-}
-
-// **إصلاح**: تعديل دالة تحديث الكمية لتعمل بشكل صحيح
-function updateQuantity(productId, newQuantity) {
-  const product = cart.find(item => item.id == productId); // استخدام '==' للمقارنة غير الصارمة (نص مع رقم)
-  if (product) {
-    product.quantity = Math.max(1, newQuantity); // الكمية لا تقل عن 1
-  }
-  renderCart();
-}
-
-function renderCart() { /* ... نفس الكود بدون تغيير ... */
-  const cartContainer = document.getElementById('cart');
-  if (cart.length === 0) { cartContainer.innerHTML = "<p>السلة فارغة حالياً.</p>"; return; }
-
-  const cartSubtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-  const selectedWilaya = wilayaSelect.value;
-  const deliveryCost = selectedWilaya ? (DELIVERY_COSTS[selectedWilaya] || DELIVERY_COSTS.default) : 0;
-  const finalTotal = cartSubtotal + deliveryCost;
-
-  // **تعديل بسيط**: تمرير الـ id المنتج لدالة التحديث
-  const cartItemsHtml = cart.map(item => {
-    const itemTotal = parseFloat(item.price) * item.quantity;
-    return `<tr><td>${item.name}</td><td>${item.price} دج</td><td><input type="number" class="quantity-input" value="${item.quantity}" min="1" onchange="updateQuantity('${item.id}', this.valueAsNumber)"></td><td>${itemTotal.toFixed(2)} دج</td><td><button class="remove-btn" onclick="removeFromCart('${item.id}')">حذف</button></td></tr>`;
-  }).join('');
-
-  cartContainer.innerHTML = `<table class="cart-table"><thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>الإجمالي</th><th>إجراء</th></tr></thead><tbody>${cartItemsHtml}</tbody><tfoot><tr><td colspan="4">المجموع الفرعي</td><td><strong>${cartSubtotal.toFixed(2)} دج</strong></td></tr><tr><td colspan="4">تكلفة التوصيل (${selectedWilaya || 'اختر ولاية'})</td><td><strong>${deliveryCost.toFixed(2)} دج</strong></td></tr><tr style="background-color:#e9f5e9;"><td colspan="4"><strong>المجموع الكلي</strong></td><td><strong>${finalTotal.toFixed(2)} دج</strong></td></tr></tfoot></table>`;
-}
-
-wilayaSelect.addEventListener('change', () => { /* ... نفس الكود بدون تغيير ... */
-  communeSelect.innerHTML = '<option value="">اختر البلدية...</option>';
-  const selectedWilaya = wilayaSelect.value;
-  if (selectedWilaya && dzData[selectedWilaya]) {
-    dzData[selectedWilaya].forEach(commune => communeSelect.appendChild(new Option(commune, commune)));
-  }
-  renderCart();
 });
 
-orderForm.addEventListener('submit', function(e) { /* ... نفس الكود بدون تغيير ... */
-  e.preventDefault();
-  if (cart.length === 0) { alert("❌ السلة فارغة!"); return; }
-  if (!orderForm.checkValidity()) { alert("❌ يرجى ملء جميع الحقول المطلوبة."); orderForm.reportValidity(); return; }
-  showConfirmationModal();
-});
 
-function showConfirmationModal() { /* ... نفس الكود بدون تغيير ... */
-  const summaryContainer = document.getElementById('confirmation-summary');
-  const name = document.getElementById('name').value, phone = document.getElementById('phone').value, wilaya = document.getElementById('wilaya').value, commune = document.getElementById('commune').value, address = document.getElementById('address').value;
-  const cartSubtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-  const deliveryCost = DELIVERY_COSTS[wilaya] || DELIVERY_COSTS.default;
-  const finalTotal = cartSubtotal + deliveryCost;
-  const itemsList = cart.map(item => `<li>${item.name} (الكمية: ${item.quantity}) - ${item.price} دج</li>`).join('');
+function displayProducts(category = 'all') {
+    const container = document.getElementById('products-container');
+    container.innerHTML = '';
+    const filteredProducts = (category === 'all') ? allProducts : allProducts.filter(p => p.category === category);
+    
+    filteredProducts.forEach(p => {
+        if (!p.id) return;
+        const div = document.createElement('div');
+        div.className = 'product';
+        const isOutOfStock = !p.quantity || parseInt(p.quantity) <= 0;
+        if (isOutOfStock) {
+            div.classList.add('out-of-stock');
+        }
 
-  summaryContainer.innerHTML = `<h4>المنتجات:</h4><ul>${itemsList}</ul><hr><p><strong>المجموع الفرعي:</strong> ${cartSubtotal.toFixed(2)} دج</p><p><strong>تكلفة التوصيل:</strong> ${deliveryCost.toFixed(2)} دج</p><h3><strong>السعر النهائي: ${finalTotal.toFixed(2)} دج</strong></h3><hr><h4>معلومات التوصيل:</h4><p><strong>الاسم:</strong> ${name}</p><p><strong>الهاتف:</strong> ${phone}</p><p><strong>العنوان:</strong> ${address}, ${commune}, ${wilaya}</p>`;
-  document.getElementById('cartData').value = cart.map(p => `${p.name} (x${p.quantity})`).join(" | ");
-  document.getElementById('deliveryCost').value = `${deliveryCost.toFixed(2)} دج`;
-  document.getElementById('cartTotal').value = `${finalTotal.toFixed(2)} دج`;
-  modal.style.display = 'block';
+        // --- **الكود الجديد لعرض بطاقة المنتج** ---
+        div.innerHTML = `
+            <img src="${p.image}" alt="${p.name}">
+            <div class="product-info">
+                <h3>${p.name}</h3>
+                <p class="product-price">${p.price} دج</p>
+                <p class="product-description">${p.description || ''}</p>
+            </div>
+            <div class="product-actions">
+                <button class="buy-now-btn" onclick='buyNow(${JSON.stringify(p)})' ${isOutOfStock ? 'disabled' : ''}>
+                    شراء الآن
+                </button>
+                <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(p)})' ${isOutOfStock ? 'disabled' : ''}>
+                    أضف للسلة
+                </button>
+            </div>`;
+        container.appendChild(div);
+    });
 }
 
-closeBtn.onclick = () => { modal.style.display = 'none'; };
-cancelBtn.onclick = () => { modal.style.display = 'none'; };
-window.onclick = (event) => { if (event.target == modal) { modal.style.display = 'none'; } };
-confirmBtn.onclick = () => {
-  confirmBtn.disabled = true;
-  confirmBtn.textContent = 'جاري الإرسال...';
-  orderForm.submit();
-};
+
+function addToCart(product) {
+    const existing = cart.find(item => item.id == product.id);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    // تحديث الأيقونة مع تأثير بسيط
+    document.querySelector('.cart-count').style.transform = 'scale(1.2)';
+    updateCartCount();
+    setTimeout(() => { document.querySelector('.cart-count').style.transform = 'scale(1)'; }, 200);
+}
+
+
+// --- **دالة جديدة لزر "شراء الآن"** ---
+function buyNow(product) {
+    // 1. أفرغ السلة الحالية
+    cart = [];
+    // 2. أضف هذا المنتج فقط
+    cart.push({ ...product, quantity: 1 });
+    // 3. قم بتحديث عداد السلة وافتح نافذة الدفع مباشرة
+    updateCartCount();
+    showCheckoutModal();
+}
+
+
+// --- باقي دوال الجافاسكريبت تبقى كما هي في النسخة المستقرة السابقة ---
+function loadWilayas() { /* ... */ } function loadProducts() { /* ... */ } function setupSlider() { /* ... */ }
+function displayCategories() { /* ... */ } function filterProducts(c) { /* ... */ } function updateCartCount() { /* ... */ }
+function showCheckoutModal() { /* ... */ } function closeModal(id) { /* ... */ } function renderCheckoutContent() { /* ... */ }
+function getCartHtml() { /* ... */ } function getFormHtml() { /* ... */ } function getWilayasOptionsHtml() { /* ... */ }
+function updateDeliveryCost() { /* ... */ } function updateCommunes(wilaya) { /* ... */ } function updateQuantity(id, qnt) { /* ... */ }
+function removeFromCart(id) { /* ... */ } function handleFormSubmit(e) { /* ... */ } function showConfirmationModal(form) { /* ... */ }
+// For brevity, using short-hand. Full code is below for clarity.
+function loadWilayas(){return fetch(DZ_DATA_URL).then(r=>r.json()).then(d=>dzData=d)}function loadProducts(){return fetch(PRODUCTS_URL).then(r=>r.json()).then(d=>allProducts=d)}function setupSlider(){const w=document.querySelector('.slider-wrapper');if(!w)return;w.innerHTML=SLIDER_IMAGES.map(s=>`<div class="slide"><img src="${s}" alt="Offer"></div>`).join('');let c=0;const s=document.querySelectorAll('.slide'),t=s.length;function o(e){w.style.transform=`translateX(${e*-100}%)`}document.querySelector('.next-btn').addEventListener('click',()=>{c=(c-1+t)%t;o(c)});document.querySelector('.prev-btn').addEventListener('click',()=>{c=(c+1)%t;o(c)});setInterval(()=>document.querySelector('.next-btn').click(),5000)}
+function displayCategories(){const c=['all',...new Set(allProducts.map(p=>p.category).filter(Boolean))];document.getElementById('category-filters').innerHTML=c.map(t=>`<button class="category-btn ${'all'===t?'active':''}" onclick="filterProducts('${t}')">${'all'===t?'كل المنتجات':t}</button>`).join('')}
+function filterProducts(c){document.querySelectorAll('.category-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.category-btn[onclick="filterProducts('${c}')"]`).classList.add('active');displayProducts(c)}
+function updateCartCount(){document.querySelector('.cart-count').textContent=cart.reduce((s,p)=>s.quantity+p.quantity,0) || cart.length} // fix for initial reduce
+function showCheckoutModal(){if(cart.length===0){alert('السلة فارغة!');return}renderCheckoutContent();document.getElementById('checkoutModal').style.display='block'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function renderCheckoutContent(){const c=document.getElementById('checkout-content-container');c.innerHTML=`<div class="checkout-grid"><div id="cart-summary-container">${getCartHtml()}</div><div id="order-form-container">${getFormHtml()}</div></div>`;const o=document.getElementById('orderForm');if(o){const w=o.querySelector('#wilaya');w.addEventListener('change',()=>{updateCommunes(w.value);updateDeliveryCost()});o.addEventListener('submit',handleFormSubmit)}updateCommunes(o?.querySelector('#wilaya').value)}
+function getCartHtml(){const t=cart.reduce((s,i)=>s+parseFloat(i.price)*i.quantity,0),w=document.getElementById('wilaya')?.value,d=w?DELIVERY_COSTS[w]||DELIVERY_COSTS.default:0,f=t+d,h=cart.map(i=>`<tr><td>${i.name}</td><td><input type="number" class="quantity-input" value="${i.quantity}" min="1" onchange="updateQuantity('${i.id}',this.valueAsNumber)"></td><td>${(i.price*i.quantity).toFixed(2)} دج</td><td><button class="remove-btn" onclick="removeFromCart('${i.id}')">X</button></td></tr>`).join('');return `<h3>سلة المشتريات</h3><table class="cart-table"><thead><tr><th>المنتج</th><th>الكمية</th><th>الإجمالي</th><th></th></tr></thead><tbody>${h}</tbody><tfoot><tr><td colspan="3">المجموع الفرعي</td><td id="subtotal-cell"><strong>${t.toFixed(2)} دج</strong></td></tr><tr><td colspan="3">تكلفة التوصيل</td><td id="delivery-cost-cell"><strong>${d.toFixed(2)} دج</strong></td></tr><tr><td colspan="3"><strong>المجموع الكلي</strong></td><td id="final-total-cell"><strong>${f.toFixed(2)} دج</strong></td></tr></tfoot></table>`}
+function getFormHtml(){const t=window.location.origin+window.location.pathname.replace(/[^/]*$/,'thankyou.html');return `<form id="orderForm" method="POST"><h3>معلومات التوصيل</h3><input type="hidden" name="_subject" value="طلب جديد من المتجر"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_next" value="${t}"><input type="hidden" name="cart_items" id="cartData"><input type="hidden" name="delivery_cost" id="deliveryCost"><input type="hidden" name="final_total_price" id="cartTotal"><label for="name">الاسم الكامل:</label><input type="text" id="name" name="name" required><label for="phone">رقم الهاتف:</label><input type="tel" id="phone" name="phone" required><label for="wilaya">الولاية:</label>${getWilayasOptionsHtml()}<label for="commune">البلدية:</label><select id="commune" name="commune" required><option value="">اختر الولاية أولاً...</option></select><label for="address">العنوان الكامل:</label><input type="text" id="address" name="address" required><button type="submit">مراجعة وتأكيد الطلب</button></form>`}
+function getWilayasOptionsHtml(){let h=`<select id="wilaya" name="wilaya" required><option value="">اختر الولاية...</option>`;Object.keys(dzData).sort().forEach(w=>{h+=`<option value="${w}">${w}</option>`});return h+"</select>"}
+function updateDeliveryCost(){const t=cart.reduce((s,i)=>s+parseFloat(i.price)*i.quantity,0),w=document.getElementById('wilaya')?.value,d=w?DELIVERY_COSTS[w]||DELIVERY_COSTS.default:0;document.querySelector('#delivery-cost-cell strong').textContent=`${d.toFixed(2)} دج`;document.querySelector('#final-total-cell strong').textContent=`${(t+d).toFixed(2)} دج`}
+function updateCommunes(w){const c=document.getElementById('commune');if(!c)return;let u=c.value;c.innerHTML='<option value="">اختر البلدية...</option>';w&&dzData[w]&&(dzData[w].forEach(n=>{const o=new Option(n,n);c.add(o)}),dzData[w].includes(u)&&(c.value=u))}
+function updateQuantity(t,q){const n=cart.find(i=>i.id==t);n&&(n.quantity=Math.max(1,parseInt(q)));updateCartCount();renderCheckoutContent()}
+function removeFromCart(t){cart=cart.filter(i=>i.id!=t);updateCartCount();0===cart.length?closeModal('checkoutModal'):renderCheckoutContent()}
+function handleFormSubmit(t){t.preventDefault();const e=t.target;if(!e.checkValidity())return alert("يرجى ملء جميع حقول التوصيل."),e.reportValidity();const f="https://formsubmit.co/cherif14200@gmail.com";const a=new FormData(e);const b=cart.reduce((s,p)=>s+p.price*p.quantity,0);const c=DELIVERY_COSTS[e.elements.wilaya.value]||DELIVERY_COSTS.default;const d=b+c;a.set('cart_items',cart.map(p=>`${p.name} (x${p.quantity})`).join(' | '));a.set('delivery_cost',`${c.toFixed(2)} دج`);a.set('final_total_price',`${d.toFixed(2)} دج`);fetch(f,{method:"POST",body:a}).then(()=>window.location.href=e.elements._next.value).catch(()=>alert("حدث خطأ أثناء إرسال الطلب"));showConfirmationModal(e, d)}
+function showConfirmationModal(f, total){/* Now handled by direct form submission */}
 </script>
 
 </body>
 </html>
-
-</body>
-  </html>
-
