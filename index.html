@@ -85,7 +85,11 @@
 const PRODUCTS_URL = "https://script.google.com/macros/s/AKfycbwAYiOFNt4eGtmSclHWBSJaMwMhSzois2-BP_uchEVhoBs7ga_CB67qi1uz_lGUgVay/exec";
 const DZ_DATA_URL = "dz.json";
 const DELIVERY_COSTS = { "الجزائر": 400, "وهران": 450, "default": 600 };
-const SLIDER_IMAGES = ["https://via.placeholder.com/1200x400/007BFF/FFFFFF?text=New+Arrivals", "https://via.placeholder.com/1200x400/28a745/FFFFFF?text=Special+Offer"];
+const SLIDER_IMAGES = [
+  "images/photo1.jpeg",
+  "images/photo2.jpg",
+  "images/photo3.jpeg"
+];
 let allProducts = [], cart = [], dzData = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
