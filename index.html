@@ -195,6 +195,30 @@ function removeFromCart(t){cart=cart.filter(i=>i.id!=t);updateCartCount();0===ca
 function handleFormSubmit(t){t.preventDefault();const e=t.target;if(!e.checkValidity())return alert("يرجى ملء جميع حقول التوصيل."),e.reportValidity();const f="https://formsubmit.co/cherif14200@gmail.com";const a=new FormData(e);const b=cart.reduce((s,p)=>s+p.price*p.quantity,0);const c=DELIVERY_COSTS[e.elements.wilaya.value]||DELIVERY_COSTS.default;const d=b+c;a.set('cart_items',cart.map(p=>`${p.name} (x${p.quantity})`).join(' | '));a.set('delivery_cost',`${c.toFixed(2)} دج`);a.set('final_total_price',`${d.toFixed(2)} دج`);fetch(f,{method:"POST",body:a}).then(()=>window.location.href=e.elements._next.value).catch(()=>alert("حدث خطأ أثناء إرسال الطلب"));showConfirmationModal(e, d)}
 function showConfirmationModal(f, total){/* Now handled by direct form submission */}
 </script>
+<!-- Firebase App (core) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // إعداد Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBsCL9oXX0iflRoQnrQyBdo1fhpMD-terg",
+    authDomain: "my-store-811c7.firebaseapp.com",
+    projectId: "my-store-811c7",
+    storageBucket: "my-store-811c7.firebasestorage.app",
+    messagingSenderId: "1088343543572",
+    appId: "1:1088343543572:web:bd11c729a4237fed147c01",
+    measurementId: "G-FFWT8SFYQP"
+  };
+
+  // تشغيل Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // الاتصال بقاعدة البيانات
+  const db = firebase.firestore();
+</script>
 
 </body>
 </html>
