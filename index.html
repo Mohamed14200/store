@@ -79,7 +79,6 @@
   <div id="checkoutModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('checkoutModal')">×</span><h2>إتمام الطلب</h2><div id="checkout-content-container"></div></div></div>
   <div id="confirmationModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('confirmationModal')">×</span><h2>📝 مراجعة الطلب</h2><div id="confirmation-summary"></div><div class="modal-buttons"><button id="cancel-order-btn" onclick="closeModal('confirmationModal')">إلغاء</button><button id="confirm-order-btn">تأكيد الطلب</button></div></div></div>
 
-
 <script>
 // --- **تغييرات طفيفة هنا لإضافة دوال الأزرار الجديدة** ---
 // --- إعدادات وثوابت ---
@@ -196,7 +195,6 @@ function removeFromCart(t){cart=cart.filter(i=>i.id!=t);updateCartCount();0===ca
 function handleFormSubmit(t){t.preventDefault();const e=t.target;if(!e.checkValidity())return alert("يرجى ملء جميع حقول التوصيل."),e.reportValidity();const f="https://formsubmit.co/cherif14200@gmail.com";const a=new FormData(e);const b=cart.reduce((s,p)=>s+p.price*p.quantity,0);const c=DELIVERY_COSTS[e.elements.wilaya.value]||DELIVERY_COSTS.default;const d=b+c;a.set('cart_items',cart.map(p=>`${p.name} (x${p.quantity})`).join(' | '));a.set('delivery_cost',`${c.toFixed(2)} دج`);a.set('final_total_price',`${d.toFixed(2)} دج`);fetch(f,{method:"POST",body:a}).then(()=>window.location.href=e.elements._next.value).catch(()=>alert("حدث خطأ أثناء إرسال الطلب"));showConfirmationModal(e, d)}
 function showConfirmationModal(f, total){/* Now handled by direct form submission */}
 </script>
-
 
 </body>
 </html>
