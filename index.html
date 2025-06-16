@@ -78,6 +78,27 @@
   
   <div id="checkoutModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('checkoutModal')">×</span><h2>إتمام الطلب</h2><div id="checkout-content-container"></div></div></div>
   <div id="confirmationModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('confirmationModal')">×</span><h2>📝 مراجعة الطلب</h2><div id="confirmation-summary"></div><div class="modal-buttons"><button id="cancel-order-btn" onclick="closeModal('confirmationModal')">إلغاء</button><button id="confirm-order-btn">تأكيد الطلب</button></div></div></div>
+<div id="orderForm" style="display:none; direction: rtl; background: #f9f9f9; padding: 15px; border: 1px solid #ccc; max-width: 400px; margin: auto;">
+  <h3>نموذج الطلب</h3>
+  <form id="form">
+    <input type="hidden" id="productName">
+    
+    <label>الاسم الكامل:</label><br>
+    <input type="text" id="customerName" required><br><br>
+
+    <label>رقم الهاتف:</label><br>
+    <input type="text" id="phoneNumber" required><br><br>
+
+    <label>العنوان (الولاية):</label><br>
+    <input type="text" id="address" required><br><br>
+
+    <label>الكمية:</label><br>
+    <input type="number" id="quantity" min="1" value="1" required><br><br>
+
+    <button type="submit">تأكيد الطلب</button>
+    <button type="button" onclick="closeForm()">إلغاء</button>
+  </form>
+</div>
 
 <script>
 // --- **تغييرات طفيفة هنا لإضافة دوال الأزرار الجديدة** ---
@@ -218,6 +239,44 @@ function showConfirmationModal(f, total){/* Now handled by direct form submissio
 
   // الاتصال بقاعدة البيانات
   const db = firebase.firestore();
+</script>
+<script>
+  function openOrderForm(productName) {
+    document.getElementById("productName").value = productName;
+    document.getElementById("orderForm").style.display = "block";
+  }
+
+  function closeForm() {
+    document.getElementById("orderForm").style.display = "none";
+  }
+
+  document.getElementById("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("customerName").value;
+    const phone = document.getElementById("phoneNumber").value;
+    const address = document.getElementById("address").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const product = document.getElementById("productName").value;
+
+    // حفظ الطلب في قاعدة البيانات
+    db.collection("orders").add({
+      product: product,
+      customerName: name,
+      phoneNumber: phone,
+      address: address,
+      quantity: quantity,
+      timestamp: new Date()
+    })
+    .then(() => {
+      alert("تم إرسال الطلب بنجاح! سنتواصل معك قريبًا.");
+      closeForm();
+      document.getElementById("form").reset();
+    })
+    .catch((error) => {
+      alert("حدث خطأ أثناء إرسال الطلب: " + error);
+    });
+  });
 </script>
 
 </body>
