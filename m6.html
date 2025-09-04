@@ -38,6 +38,7 @@
             padding: 20px;
             transition: left 0.3s;
             overflow-y: auto;
+            z-index: 1000;
         }
         #channel-list a {
             display: block;
@@ -46,6 +47,7 @@
             text-decoration: none;
             border-bottom: 1px solid gray;
             font-size: 18px;
+            cursor: pointer;
         }
         #channel-list a:hover {
             background: gray;
@@ -61,6 +63,7 @@
             cursor: pointer;
             font-size: 16px;
             border-radius: 5px;
+            z-index: 1100;
         }
         #mute-button {
             left: 80px;
@@ -83,24 +86,55 @@
 <body>
     <button id="menu-button" onclick="toggleMenu()">☰ القنوات</button>
     <button id="mute-button" onclick="toggleMute()">🔊</button>
-    <div id="channel-list">
-        <!-- رابط مباشر عادي -->
-        <a href="#" onclick="changeChannel('https://live.alarabiya.net/alarabiapublish/alarabiya.smil/alarabiapublish/alarabiya_1080p/chunks.m3u8')">العربية</a>
-        <!-- رابط محمي هيعدي على البروكسي -->
-        <a href="#" onclick="changeChannel('http://localhost:3000/proxy?url=https://mbc1-enc.edgenextcdn.net/out/v1/b0b3a0e6750d4408bb86d703d5feffd1/index.m3u8')">MBC1</a>
-    </div>
+    <div id="channel-list"></div>
     <div id="video-container">
         <video id="video-player" autoplay controls></video>
     </div>
     <script>
+        const channels = [
+            { name: "باب الحارة", url: "https://shls-live-enc.edgenextcdn.net/out/v1/948c54279b594944adde578c95f1d7d1/index.m3u8" },
+            { name: "CBC DRAMA", url: "https://fl1002.bozztv.com/ga-cbcdrama/index.m3u8" },
+            { name: "DMC DRAMA", url: "https://fl1002.bozztv.com/ga-dmcdrama/index.m3u8" },
+            { name: "AJD", url: "https://live-hls-apps-ajd-fa.getaj.net/AJD/index.m3u8" },
+            { name: "العربي", url: "https://alarabyta.cdn.octivid.com/alaraby/smil:alaraby.stream.smil/chunklist.m3u8" },
+            { name: "الريان", url: "https://alrayyancdn.vidgyor.com/pub-nooldraybinbdh/liveabr/playlist_dvr.m3u8" },
+            { name: "قناة الرسالة", url: "https://rotana.hibridcdn.net/rotananet/risala_net-7Y83PP5adWixDF93/playlist.m3u8" },
+            { name: "قناة السنة النبوية", url: "https://cdn-globecast.akamaized.net/live/eds/saudi_sunnah/hls_roku/index.m3u8" },
+            { name: "اقرأ", url: "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv1/playlist.m3u8" },
+            { name: "قناة الكوميديا", url: "https://playlist.fasttvcdn.com/pl/cc0blorawy1ibohhrupraa/Comedy/playlist.m3u8" },
+            { name: "ماجد للأطفال", url: "https://vo-live-media.cdb.cdn.orange.com/Content/Channel/MajidChildrenChannel/HLS/index.m3u8" },
+            { name: "MBC1", url: "https://mbc1-enc.edgenextcdn.net/out/v1/0965e4d7deae49179172426cbfb3bc5e/index.m3u8" },
+            { name: "MBC2", url: "https://edge66.magictvbox.com/liveApple/MBC_2/index.m3u8" },
+            { name: "MBC DRAMA", url: "https://mbc1-enc.edgenextcdn.net/out/v1/b0b3a0e6750d4408bb86d703d5feffd1/index.m3u8" }
+        ];
+
         let video = document.getElementById('video-player');
+        let menu = document.getElementById('channel-list');
+        let hlsInstance = null;
+
+        // إنشاء قائمة القنوات تلقائيًا
+        channels.forEach(channel => {
+            const link = document.createElement("a");
+            link.textContent = channel.name;
+            link.onclick = () => {
+                changeChannel(channel.url);
+                closeMenu();
+            };
+            menu.appendChild(link);
+        });
 
         function playStream(url) {
+            // إيقاف أي بث سابق
+            if (hlsInstance) {
+                hlsInstance.destroy();
+                hlsInstance = null;
+            }
+
             if (Hls.isSupported()) {
-                let hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(video);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
                     video.play();
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -110,8 +144,11 @@
         }
 
         function toggleMenu() {
-            let menu = document.getElementById('channel-list');
             menu.style.left = menu.style.left === '0px' ? '-250px' : '0px';
+        }
+
+        function closeMenu() {
+            menu.style.left = '-250px';
         }
 
         function changeChannel(url) {
@@ -123,8 +160,8 @@
             document.getElementById('mute-button').textContent = video.muted ? '🔇' : '🔊';
         }
 
-        // بث افتراضي عند التحميل
-        playStream('https://mbc1-enc.edgenextcdn.net/out/v1/b0b3a0e6750d4408bb86d703d5feffd1/index.m3u8');
+        // تشغيل القناة الأولى عند الفتح
+        changeChannel(channels[0].url);
     </script>
 </body>
 </html>
