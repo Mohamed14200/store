@@ -84,15 +84,17 @@
     <button id="menu-button" onclick="toggleMenu()">☰ القنوات</button>
     <button id="mute-button" onclick="toggleMute()">🔊</button>
     <div id="channel-list">
-        <a href="#" onclick="changeChannel('https://live-hls-apps-ajd-fa.getaj.net/AJD/index.m3u8')">TF1</a>
+        <!-- رابط مباشر عادي -->
         <a href="#" onclick="changeChannel('https://live.alarabiya.net/alarabiapublish/alarabiya.smil/alarabiapublish/alarabiya_1080p/chunks.m3u8')">العربية</a>
-        <a href="#" onclick="changeChannel('https://qatartv.akamaized.net/hls/live/2026573/qtv1/4.m3u8')">تلفزيون قطر</a>
+        <!-- رابط محمي هيعدي على البروكسي -->
+        <a href="#" onclick="changeChannel('http://localhost:3000/proxy?url=https://mbc1-enc.edgenextcdn.net/out/v1/b0b3a0e6750d4408bb86d703d5feffd1/index.m3u8')">MBC1</a>
     </div>
     <div id="video-container">
-        <video id="video-player" autoplay></video>
+        <video id="video-player" autoplay controls></video>
     </div>
     <script>
         let video = document.getElementById('video-player');
+
         function playStream(url) {
             if (Hls.isSupported()) {
                 let hls = new Hls();
@@ -106,21 +108,23 @@
                 video.play();
             }
         }
+
         function toggleMenu() {
             let menu = document.getElementById('channel-list');
             menu.style.left = menu.style.left === '0px' ? '-250px' : '0px';
         }
+
         function changeChannel(url) {
             playStream(url);
         }
+
         function toggleMute() {
             video.muted = !video.muted;
             document.getElementById('mute-button').textContent = video.muted ? '🔇' : '🔊';
         }
+
+        // بث افتراضي عند التحميل
         playStream('https://mbc1-enc.edgenextcdn.net/out/v1/b0b3a0e6750d4408bb86d703d5feffd1/index.m3u8');
     </script>
 </body>
 </html>
-
-
-
