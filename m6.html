@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاهدة القنوات</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+        #video-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        video {
+            width: 90vw;
+            height: 90vh;
+            object-fit: contain;
+            background: black;
+        }
+        #channel-list {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            transition: left 0.3s;
+            overflow-y: auto;
+        }
+        #channel-list a {
+            display: block;
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid gray;
+            font-size: 18px;
+        }
+        #channel-list a:hover {
+            background: gray;
+        }
+        #menu-button, #mute-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        #mute-button {
+            left: 80px;
+        }
+        @media (max-width: 768px) {
+            #channel-list {
+                width: 200px;
+            }
+            #channel-list a {
+                font-size: 16px;
+                padding: 12px;
+            }
+            video {
+                width: 100vw;
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="menu-button" onclick="toggleMenu()">☰ القنوات</button>
+    <button id="mute-button" onclick="toggleMute()">🔊</button>
+    <div id="channel-list">
+        <a href="#" onclick="changeChannel('https://live-hls-apps-ajd-fa.getaj.net/AJD/index.m3u8')">TF1</a>
+        <a href="#" onclick="changeChannel('https://live.alarabiya.net/alarabiapublish/alarabiya.smil/alarabiapublish/alarabiya_1080p/chunks.m3u8')">العربية</a>
+        <a href="#" onclick="changeChannel('https://qatartv.akamaized.net/hls/live/2026573/qtv1/4.m3u8')">تلفزيون قطر</a>
+    </div>
+    <div id="video-container">
+        <video id="video-player" autoplay></video>
+    </div>
+    <script>
+        let video = document.getElementById('video-player');
+        function playStream(url) {
+            if (Hls.isSupported()) {
+                let hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+            }
+        }
+        function toggleMenu() {
+            let menu = document.getElementById('channel-list');
+            menu.style.left = menu.style.left === '0px' ? '-250px' : '0px';
+        }
+        function changeChannel(url) {
+            playStream(url);
+        }
+        function toggleMute() {
+            video.muted = !video.muted;
+            document.getElementById('mute-button').textContent = video.muted ? '🔇' : '🔊';
+        }
+        playStream('https://raw.githubusercontent.com/Paradise-91/ParaTV/main/streams/tf1plus/tf1.m3u8');
+    </script>
+</body>
+</html>
+
