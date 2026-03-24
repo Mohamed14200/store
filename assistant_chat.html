@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #e5e2dc;
+    --border2: #d4cfc8;
+    --text: #1a1814;
+    --text2: #6b6560;
+    --text3: #9e9890;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --accent-hover: #1d4ed8;
+    --bot-bubble: #ffffff;
+    --user-bubble: #1a1814;
+    --user-text: #ffffff;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ─── Header ─── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bot-avatar {
+    width: 38px;
+    height: 38px;
+    background: var(--text);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .bot-avatar svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+
+  .header-info h1 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 1px;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text2);
+    transition: all 0.15s ease;
+    position: relative;
+  }
+
+  .icon-btn:hover {
+    background: var(--surface2);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  .tooltip {
+    position: absolute;
+    bottom: -32px;
+    right: 50%;
+    transform: translateX(50%);
+    background: var(--text);
+    color: white;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 100;
+  }
+
+  .icon-btn:hover .tooltip { opacity: 1; }
+
+  /* ─── N8N URL Bar ─── */
+  .url-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .url-bar label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .url-input {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    direction: ltr;
+  }
+
+  .url-input:focus { border-color: var(--accent); }
+
+  .url-input::placeholder { color: var(--text3); }
+
+  .save-btn {
+    padding: 7px 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .save-btn:hover { background: var(--accent-hover); }
+
+  /* ─── Messages Area ─── */
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .messages-container::-webkit-scrollbar { width: 5px; }
+  .messages-container::-webkit-scrollbar-track { background: transparent; }
+  .messages-container::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+  /* ─── Welcome ─── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 12px;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .welcome-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--text);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+
+  .welcome-icon svg { width: 28px; height: 28px; fill: white; }
+
+  .welcome h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .welcome p {
+    font-size: 14px;
+    color: var(--text2);
+    max-width: 360px;
+    line-height: 1.6;
+  }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .suggestion-chip {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .suggestion-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  /* ─── Message Bubbles ─── */
+  .message {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    animation: slideUp 0.2s ease;
+    max-width: 780px;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .message.user { flex-direction: row-reverse; margin-right: auto; margin-left: 0; align-self: flex-end; }
+  .message.bot { align-self: flex-start; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .message.bot .msg-avatar {
+    background: var(--text);
+    color: white;
+  }
+
+  .message.user .msg-avatar {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .msg-content { display: flex; flex-direction: column; gap: 4px; max-width: calc(100% - 44px); }
+
+  .bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.65;
+    word-break: break-word;
+  }
+
+  .message.bot .bubble {
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-radius: 4px var(--radius) var(--radius) var(--radius);
+    box-shadow: var(--shadow);
+    color: var(--text);
+  }
+
+  .message.user .bubble {
+    background: var(--user-bubble);
+    color: var(--user-text);
+    border-radius: var(--radius) 4px var(--radius) var(--radius);
+  }
+
+  /* ─── Markdown Styles ─── */
+  .bubble h1, .bubble h2, .bubble h3 {
+    font-weight: 600;
+    margin: 12px 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .bubble h1 { font-size: 17px; }
+  .bubble h2 { font-size: 15px; }
+  .bubble h3 { font-size: 14px; }
+
+  .bubble p { margin: 6px 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+
+  .bubble ul, .bubble ol {
+    padding-right: 20px;
+    margin: 6px 0;
+  }
+
+  .bubble li { margin: 3px 0; }
+
+  .bubble strong { font-weight: 600; }
+  .bubble em { font-style: italic; }
+
+  .bubble code:not(pre code) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  .bubble pre {
+    margin: 10px 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .code-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-lang {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 500;
+  }
+
+  .copy-code-btn {
+    font-family: inherit;
+    font-size: 11px;
+    color: var(--text2);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .copy-code-btn:hover { background: var(--border); color: var(--text); }
+
+  .bubble pre code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    display: block;
+    padding: 12px;
+    overflow-x: auto;
+    background: var(--surface);
+    line-height: 1.6;
+  }
+
+  .bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 13px;
+  }
+
+  .bubble th, .bubble td {
+    border: 1px solid var(--border);
+    padding: 7px 10px;
+    text-align: right;
+  }
+
+  .bubble th {
+    background: var(--surface2);
+    font-weight: 600;
+  }
+
+  /* ─── Message Footer ─── */
+  .msg-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .message.user .msg-footer { justify-content: flex-end; }
+
+  .msg-time {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .copy-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--surface2); color: var(--text2); }
+  .copy-btn svg { width: 13px; height: 13px; }
+
+  /* ─── Typing Indicator ─── */
+  .typing-indicator {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    animation: slideUp 0.2s ease;
+  }
+
+  .typing-bubble {
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-radius: 4px var(--radius) var(--radius) var(--radius);
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--text3);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* ─── Input Area ─── */
+  .input-area {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    flex-shrink: 0;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    transition: border-color 0.15s;
+    box-shadow: var(--shadow);
+  }
+
+  .input-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+  }
+
+  #messageInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
+    padding: 2px 0;
+  }
+
+  #messageInput::placeholder { color: var(--text3); }
+
+  .send-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--text);
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .send-btn:hover { background: #333; transform: scale(1.04); }
+  .send-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    background: var(--text);
+    color: white;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: var(--shadow-md);
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ─── Error ─── */
+  .error-bubble {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 4px var(--radius) var(--radius) var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--danger);
+    box-shadow: var(--shadow);
+  }
+
+  /* ─── Scrollbar hide for textarea ─── */
+  #messageInput::-webkit-scrollbar { width: 4px; }
+  #messageInput::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-left">
+    <div class="bot-avatar">
+      <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 14a1.5 1.5 0 0 0-1.5 1.5A1.5 1.5 0 0 0 7.5 17 1.5 1.5 0 0 0 9 15.5 1.5 1.5 0 0 0 7.5 14m9 0a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5A1.5 1.5 0 0 0 16.5 14M5 19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1H5v1z"/></svg>
+    </div>
+    <div class="header-info">
+      <h1>Assistant</h1>
+      <div class="status">
+        <div class="status-dot"></div>
+        <span>متصل</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="clearChat()" title="مسح المحادثة">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      <span class="tooltip">مسح المحادثة</span>
+    </button>
+  </div>
+</header>
+
+<!-- N8N URL Bar -->
+<div class="url-bar">
+  <label>🔗 رابط n8n Webhook:</label>
+  <input type="text" class="url-input" id="webhookUrl"
+    placeholder="http://localhost:5678/webhook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    value="">
+  <button class="save-btn" onclick="saveUrl()">حفظ</button>
+</div>
+
+<!-- Messages -->
+<div class="messages-container" id="messagesContainer">
+  <div class="welcome" id="welcomeScreen">
+    <div class="welcome-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 14a1.5 1.5 0 0 0-1.5 1.5A1.5 1.5 0 0 0 7.5 17 1.5 1.5 0 0 0 9 15.5 1.5 1.5 0 0 0 7.5 14m9 0a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5A1.5 1.5 0 0 0 16.5 14M5 19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1H5v1z"/></svg>
+    </div>
+    <h2>مرحباً بك في Assistant</h2>
+    <p>أنا مساعدك الذكي المدعوم بـ n8n. أضف رابط الـ Webhook أعلاه وابدأ المحادثة.</p>
+    <div class="suggestions">
+      <div class="suggestion-chip" onclick="sendSuggestion('ما هو الطقس اليوم؟')">🌤 الطقس اليوم</div>
+      <div class="suggestion-chip" onclick="sendSuggestion('اكتب لي كود Python لقراءة ملف CSV')">💻 كود Python</div>
+      <div class="suggestion-chip" onclick="sendSuggestion('ما هي آخر الأخبار؟')">📰 آخر الأخبار</div>
+      <div class="suggestion-chip" onclick="sendSuggestion('اشرح لي مفهوم الذكاء الاصطناعي')">🤖 الذكاء الاصطناعي</div>
+    </div>
+  </div>
+</div>
+
+<!-- Input -->
+<div class="input-area">
+  <div class="input-wrapper">
+    <textarea id="messageInput" rows="1" placeholder="اكتب رسالتك هنا..." onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <div class="input-hint">اضغط Enter للإرسال • Shift+Enter لسطر جديد</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─── State ───
+  let sessionId = 'session_' + Date.now();
+  let isLoading = false;
+
+  // ─── Init ───
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('n8n_webhook_url');
+    if (saved) document.getElementById('webhookUrl').value = saved;
+    hljs.configure({ ignoreUndetectedLanguage: true });
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+    });
+  });
+
+  // ─── Save URL ───
+  function saveUrl() {
+    const url = document.getElementById('webhookUrl').value.trim();
+    if (!url) { showToast('⚠️ أدخل رابط الـ Webhook أولاً'); return; }
+    localStorage.setItem('n8n_webhook_url', url);
+    showToast('✅ تم حفظ الرابط');
+  }
+
+  // ─── Auto Resize Textarea ───
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  // ─── Key Handler ───
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  // ─── Send Suggestion ───
+  function sendSuggestion(text) {
+    document.getElementById('messageInput').value = text;
+    sendMessage();
+  }
+
+  // ─── Send Message ───
+  async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text || isLoading) return;
+
+    const webhookUrl = document.getElementById('webhookUrl').value.trim();
+    if (!webhookUrl) { showToast('⚠️ أدخل رابط n8n Webhook أولاً'); return; }
+
+    // Hide welcome
+    const welcome = document.getElementById('welcomeScreen');
+    if (welcome) welcome.remove();
+
+    // Add user message
+    addMessage('user', text);
+    input.value = '';
+    input.style.height = 'auto';
+
+    // Show typing
+    const typingId = showTyping();
+    isLoading = true;
+    document.getElementById('sendBtn').disabled = true;
+
+    try {
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chatInput: text,
+          sessionId: sessionId,
+          message: text
+        })
+      });
+
+      removeTyping(typingId);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+
+      // Extract response text from various n8n response formats
+      let botText = '';
+      if (typeof data === 'string') botText = data;
+      else if (data.output) botText = data.output;
+      else if (data.text) botText = data.text;
+      else if (data.message) botText = data.message;
+      else if (data.response) botText = data.response;
+      else if (Array.isArray(data) && data[0]) {
+        const first = data[0];
+        botText = first.output || first.text || first.message || JSON.stringify(first);
+      }
+      else botText = JSON.stringify(data, null, 2);
+
+      addMessage('bot', botText);
+
+    } catch (err) {
+      removeTyping(typingId);
+      addErrorMessage('تعذّر الاتصال بـ n8n. تأكد من أن الـ Webhook صحيح وأن الوورك فلو يعمل.');
+      console.error(err);
+    }
+
+    isLoading = false;
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
+  }
+
+  // ─── Add Message ───
+  function addMessage(role, content) {
+    const container = document.getElementById('messagesContainer');
+    const time = new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+
+    const wrap = document.createElement('div');
+    wrap.className = `message ${role}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.textContent = role === 'bot' ? 'AI' : 'أنت'.charAt(0);
+
+    const msgContent = document.createElement('div');
+    msgContent.className = 'msg-content';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    if (role === 'bot') {
+      bubble.innerHTML = renderMarkdown(content);
+      // Highlight code blocks
+      bubble.querySelectorAll('pre code').forEach(block => {
+        wrapCodeBlock(block);
+        hljs.highlightElement(block);
+      });
+    } else {
+      bubble.textContent = content;
+    }
+
+    const footer = document.createElement('div');
+    footer.className = 'msg-footer';
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'msg-time';
+    timeEl.textContent = time;
+
+    footer.appendChild(timeEl);
+
+    if (role === 'bot') {
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.title = 'نسخ الرد';
+      copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(content);
+        showToast('✅ تم نسخ الرد');
+      };
+      footer.appendChild(copyBtn);
+    }
+
+    msgContent.appendChild(bubble);
+    msgContent.appendChild(footer);
+    wrap.appendChild(avatar);
+    wrap.appendChild(msgContent);
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ─── Render Markdown ───
+  function renderMarkdown(text) {
+    try {
+      return marked.parse(text);
+    } catch {
+      return text.replace(/\n/g, '<br>');
+    }
+  }
+
+  // ─── Wrap Code Block with Header ───
+  function wrapCodeBlock(codeEl) {
+    const pre = codeEl.parentElement;
+    if (pre.querySelector('.code-header')) return;
+
+    const lang = [...codeEl.classList].find(c => c.startsWith('language-'))?.replace('language-', '') || 'code';
+
+    const header = document.createElement('div');
+    header.className = 'code-header';
+    header.innerHTML = `
+      <span class="code-lang">${lang}</span>
+      <button class="copy-code-btn" onclick="copyCode(this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        نسخ
+      </button>`;
+
+    pre.insertBefore(header, codeEl);
+  }
+
+  function copyCode(btn) {
+    const code = btn.closest('pre').querySelector('code').textContent;
+    navigator.clipboard.writeText(code);
+    btn.textContent = '✅ تم';
+    setTimeout(() => { btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> نسخ`; }, 2000);
+  }
+
+  // ─── Error Message ───
+  function addErrorMessage(text) {
+    const container = document.getElementById('messagesContainer');
+    const wrap = document.createElement('div');
+    wrap.className = 'message bot';
+    wrap.innerHTML = `
+      <div class="msg-avatar">AI</div>
+      <div class="msg-content">
+        <div class="error-bubble">⚠️ ${text}</div>
+      </div>`;
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ─── Typing Indicator ───
+  function showTyping() {
+    const container = document.getElementById('messagesContainer');
+    const id = 'typing_' + Date.now();
+    const el = document.createElement('div');
+    el.id = id;
+    el.className = 'typing-indicator';
+    el.innerHTML = `
+      <div class="msg-avatar" style="background:#1a1814;color:white;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;margin-top:2px;">AI</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>`;
+    container.appendChild(el);
+    container.scrollTop = container.scrollHeight;
+    return id;
+  }
+
+  function removeTyping(id) {
+    document.getElementById(id)?.remove();
+  }
+
+  // ─── Clear Chat ───
+  function clearChat() {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = '';
+    sessionId = 'session_' + Date.now();
+
+    const welcome = document.createElement('div');
+    welcome.className = 'welcome';
+    welcome.id = 'welcomeScreen';
+    welcome.innerHTML = `
+      <div class="welcome-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 14a1.5 1.5 0 0 0-1.5 1.5A1.5 1.5 0 0 0 7.5 17 1.5 1.5 0 0 0 9 15.5 1.5 1.5 0 0 0 7.5 14m9 0a1.5 1.5 0 0 0-1.5 1.5 1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5A1.5 1.5 0 0 0 16.5 14M5 19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1H5v1z"/></svg>
+      </div>
+      <h2>مرحباً بك في Assistant</h2>
+      <p>أنا مساعدك الذكي المدعوم بـ n8n. أضف رابط الـ Webhook أعلاه وابدأ المحادثة.</p>
+      <div class="suggestions">
+        <div class="suggestion-chip" onclick="sendSuggestion('ما هو الطقس اليوم؟')">🌤 الطقس اليوم</div>
+        <div class="suggestion-chip" onclick="sendSuggestion('اكتب لي كود Python لقراءة ملف CSV')">💻 كود Python</div>
+        <div class="suggestion-chip" onclick="sendSuggestion('ما هي آخر الأخبار؟')">📰 آخر الأخبار</div>
+        <div class="suggestion-chip" onclick="sendSuggestion('اشرح لي مفهوم الذكاء الاصطناعي')">🤖 الذكاء الاصطناعي</div>
+      </div>`;
+    container.appendChild(welcome);
+    showToast('🗑️ تم مسح المحادثة');
+  }
+
+  // ─── Toast ───
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
